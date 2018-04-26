@@ -32,7 +32,19 @@ public class UDFs {
             };
 
     public static final UDF1 timestampToDayPeriod =
-            (UDF1<String, Integer>) timestamp -> (int) (parse(timestamp, TIMESTAMP_FORMATTER).getHour() / 6.0D) + 1;
+            (UDF1<String, Integer>) timestamp -> {
+                val date =  parse(timestamp, TIMESTAMP_FORMATTER);
+                val dayHour = date.getHour();
+
+                if (dayHour < 6)
+                    return 1;
+                if (dayHour >= 6 && dayHour < 10)
+                    return 2;
+                if (dayHour >= 10 && dayHour <= 19)
+                    return 3;
+
+                return 4;
+            };
 
     public static final UDF1 normalizeIndoorTemp =
             (UDF1<Double, Double>) indoorTemp -> (indoorTemp - minIndoorTemp)/(maxIndoorTemp - minIndoorTemp);
