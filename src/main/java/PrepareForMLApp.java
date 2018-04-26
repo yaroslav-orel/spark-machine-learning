@@ -13,8 +13,8 @@ import static org.apache.spark.sql.types.DataTypes.StringType;
 public class PrepareForMLApp {
 
     private static final String APP_NAME = "Prepare-Dataset";
-    private static final String DATASET_NAME = "miniset.csv";
-    private static final String ML_READY_DATASET_PATH = "ml-ready-miniset.csv";
+    private static final String DATASET_NAME = "dataset.csv";
+    private static final String ML_READY_DATASET_PATH = "ml-ready.csv";
 
     public static void main(String[] args) {
         val session = SparkUtil.initSparkSession(APP_NAME);

@@ -8,16 +8,16 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 public class UDFs {
     // min max for minites
-    private static final Double minIndoorTemp = 10D;
+    /*private static final Double minIndoorTemp = 10D;
     private static final Double maxIndoorTemp = 35.27D;
     private static final Double minOutdoorTemp = -6.25D;
-    private static final Double maxOutdoorTemp = 32.14D;
+    private static final Double maxOutdoorTemp = 32.14D;*/
 
     //min max for full set
-    /*private static final Double minIndoorTemp = 10D;
-    private static final Double maxIndoorTemp = 41.483D;
-    private static final Double minOutdoorTemp = -20.43D;
-    private static final Double maxOutdoorTemp = 38.716D;*/
+    private static final Double minIndoorTemp = 10D;
+    private static final Double maxIndoorTemp = 41.49D;
+    private static final Double minOutdoorTemp = -20.44D;
+    private static final Double maxOutdoorTemp = 38.72D;
 
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = ofPattern("yyyy-MM-dd'T'HH:mm");
 

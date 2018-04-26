@@ -9,8 +9,8 @@ import static org.apache.spark.sql.functions.min;
 public class CalculateMinMaxApp {
 
     private static final String APP_NAME = "Calculate mix-max";
-    private static final String DATASET_NAME = "miniset.csv";
-    private static final String ML_READY_DATASET_PATH = "min-max-miniset.csv";
+    private static final String DATASET_NAME = "dataset.csv";
+    private static final String ML_READY_DATASET_PATH = "min-max-dataset.csv";
 
     public static void main(String[] args) {
         val session = SparkUtil.initSparkSession(APP_NAME);
