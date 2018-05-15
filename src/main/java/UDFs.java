@@ -7,17 +7,9 @@ import static java.time.LocalDateTime.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 public class UDFs {
-    // min max for minites
-    /*private static final Double minIndoorTemp = 10D;
-    private static final Double maxIndoorTemp = 35.27D;
-    private static final Double minOutdoorTemp = -6.25D;
-    private static final Double maxOutdoorTemp = 32.14D;*/
 
-    //min max for full set
-    private static final Double minIndoorTemp = 10D;
-    private static final Double maxIndoorTemp = 41.49D;
-    private static final Double minOutdoorTemp = -20.44D;
-    private static final Double maxOutdoorTemp = 38.72D;
+    public static final Double MIN_TEMP = -40D;
+    public static final Double MAX_TEMP = 44D;
 
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = ofPattern("yyyy-MM-dd'T'HH:mm");
 
@@ -47,9 +39,12 @@ public class UDFs {
             };
 
     public static final UDF1 normalizeIndoorTemp =
-            (UDF1<Double, Double>) indoorTemp -> (indoorTemp - minIndoorTemp)/(maxIndoorTemp - minIndoorTemp);
+            (UDF1<Double, Double>) indoorTemp -> (indoorTemp - MIN_TEMP)/(MAX_TEMP - MIN_TEMP);
 
     public static final UDF1 normalizeOutdoorTemp =
-            (UDF1<Double, Double>) outoorTemp -> (outoorTemp - minOutdoorTemp)/(maxOutdoorTemp - minOutdoorTemp);
+            (UDF1<Double, Double>) outoorTemp -> (outoorTemp - MIN_TEMP)/(MAX_TEMP - MIN_TEMP);
+
+    public static final UDF1 disnornalizeIndoorTemp =
+            (UDF1<Double, Double>) normIndoor -> normIndoor*(MAX_TEMP - MIN_TEMP) + MIN_TEMP;
 
 }

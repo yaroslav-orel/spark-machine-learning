@@ -9,17 +9,26 @@ import org.apache.spark.ml.feature.VectorIndexer;
 import org.apache.spark.ml.regression.GBTRegressor;
 import org.apache.spark.ml.tuning.CrossValidator;
 import org.apache.spark.ml.tuning.ParamGridBuilder;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
+
+import java.io.IOException;
+
+import static java.util.Arrays.asList;
+import static org.apache.spark.sql.functions.callUDF;
+import static org.apache.spark.sql.types.DataTypes.DoubleType;
+import static org.apache.spark.sql.types.DataTypes.StringType;
 
 public class TeachAgentApp {
 
     private static final String APP_NAME = "Teach-Agent";
     private static final String DATASET_NAME = "ml-ready.csv";
-    private static final String PREDICTION_DATASET_PATH = "predictions.csv";
+    private static final String PREDICTION_DATASET_PATH = "predictions1.csv";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         val session = SparkUtil.initSparkSession(APP_NAME);
+        session.udf().register("disnornalizeIndoorTemp", UDFs.disnornalizeIndoorTemp, DoubleType);
         var initialDataset = SparkUtil.getDataset(session, getSchema(), MiscUtil.getFilePath(DATASET_NAME));
 
         val splitDatasets = initialDataset.randomSplit(new double[]{0.7, 0.3});
@@ -28,9 +37,13 @@ public class TeachAgentApp {
 
         val pipeline = buildPipeline(initialDataset.columns());
         val pipelineModel = pipeline.fit(trainDataset);
+        pipelineModel.save("ml-model");
+
         val predictions = pipelineModel.transform(testDataset);
 
         val withoutFeatures = predictions.drop("rawFeatures").drop("features");
+        /*val withConvertedIndoorTemp = withoutFeatures
+                .withColumn("Indoor Temp", callUDF("disnornalizeIndoorTemp", withoutFeatures.col("prediction")));*/
         SparkUtil.saveCSV(withoutFeatures, MiscUtil.getFilePath(PREDICTION_DATASET_PATH));
     }
 
@@ -43,7 +56,7 @@ public class TeachAgentApp {
     }
 
     private static Pipeline buildPipeline(String[] cols){
-        val featureCols = ArrayUtils.removeElement(cols, "Norm Outdoor");
+        val featureCols = ArrayUtils.removeElement(cols, "Norm Indoor");
 
         val vectorAssembler = new VectorAssembler()
                 .setInputCols(featureCols)
@@ -55,7 +68,7 @@ public class TeachAgentApp {
                 .setMaxCategories(7);
 
         val gbt = new GBTRegressor()
-                .setLabelCol("Norm Outdoor");
+                .setLabelCol("Norm Indoor");
 
         val paramGrid = new ParamGridBuilder()
                 .addGrid(gbt.maxDepth(), new int[]{2,5})

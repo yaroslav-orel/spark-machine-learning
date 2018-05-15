@@ -23,7 +23,13 @@ public class PrepareForMLApp {
         val initialDataset = SparkUtil.getDataset(session, getSchema(), MiscUtil.getFilePath(DATASET_NAME));
         val preparedDS = getPreparedDataset(initialDataset);
 
-        SparkUtil.saveCSV(preparedDS, MiscUtil.getFilePath(ML_READY_DATASET_PATH));
+        val lightweightDS = preparedDS
+                .drop("Date")
+                .drop("avg(Outdoor Temp)")
+                .drop("avg(Indoor Temp)")
+                .drop("avg(Energy Consumption)");
+
+        SparkUtil.saveCSV(lightweightDS, MiscUtil.getFilePath(ML_READY_DATASET_PATH));
     }
 
     private static Dataset<Row> getPreparedDataset(Dataset<Row> initialDataset) {
@@ -34,15 +40,9 @@ public class PrepareForMLApp {
                 .groupBy("Date", "Week Day", "Day Period")
                 .avg("Outdoor Temp", "Indoor Temp", "Energy Consumption");
 
-        SparkUtil.saveCSV(transformedDS, MiscUtil.getFilePath("before-normalization.csv"));
-
         return transformedDS
                 .withColumn("Norm Indoor", callUDF("normalizeIndoorTemp", transformedDS.col("avg(Indoor Temp)")))
-                .withColumn("Norm Outdoor", callUDF("normalizeOutdoorTemp", transformedDS.col("avg(Outdoor Temp)")))
-                .drop("Date")
-                .drop("avg(Outdoor Temp)")
-                .drop("avg(Indoor Temp)")
-                .drop("avg(Energy Consumption)");
+                .withColumn("Norm Outdoor", callUDF("normalizeOutdoorTemp", transformedDS.col("avg(Outdoor Temp)")));
     }
 
     public static StructType getSchema() {
