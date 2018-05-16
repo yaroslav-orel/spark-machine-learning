@@ -31,8 +31,8 @@ public class PredictionApplication {
         val pipelineModel = PipelineModel.load("ml-model");
         val prediction = pipelineModel.transform(rowToPredict);
         val prettifiedDS = prediction
-                .withColumn("Outdoor Temp", callUDF("disnornalizeIndoorTemp", prediction.col("prediction")))
-                .withColumn("Predicted Indoor Temp", callUDF("disnornalizeIndoorTemp", prediction.col("Norm Outdoor")))
+                .withColumn("Outdoor Temp", callUDF("disnornalizeIndoorTemp", prediction.col("Norm Outdoor")))
+                .withColumn("Predicted Indoor Temp", callUDF("disnornalizeIndoorTemp", prediction.col("prediction")))
                 .drop("rawFeatures").drop("features").drop("prediction").drop("Norm Outdoor");
         prettifiedDS.show();
     }
